@@ -33,6 +33,7 @@ public class Player : MonoBehaviour
 	private void Awake()
 	{
 		m_Rigidbody2D = GetComponent<Rigidbody2D>();
+		m_Rigidbody2D.freezeRotation = true;
 
 		if (OnLandEvent == null)
 			OnLandEvent = new UnityEvent();
