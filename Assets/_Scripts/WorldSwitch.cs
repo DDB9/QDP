@@ -10,8 +10,6 @@ public class WorldSwitch : MonoBehaviour
         {
             GameManager.Instance.Player.transform.rotation = Quaternion.Euler(Vector3.zero);
             GameManager.Instance.Player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
-
-            Camera.main.GetComponent<Animator>().Play("SkyboxToHell");
         }
     }
 }

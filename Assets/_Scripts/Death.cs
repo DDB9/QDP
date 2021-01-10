@@ -17,16 +17,21 @@ public class Death : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.transform.GetComponent<Player>())
+        collision.transform.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+        foreach (Enemy enemy in GameManager.Instance.Enemies)
         {
-            collision.transform.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
-            foreach (Enemy enemy in GameManager.Instance.Enemies)
-            {
-                enemy.Frozen = true;
-            }
+            enemy.Frozen = true;
+        }
 
+        if (collision.transform.GetComponent<Player>() && CompareTag("Overworld"))
+        {
             GameManager.Instance.World.GetComponent<Animator>().Play("WorldDeathRotation");
             GameManager.Instance.Hell.SetActive(true);
+        }
+
+        if (collision.transform.GetComponent<Player>() && CompareTag("Hell"))
+        {
+            GameManager.Instance.GameOverScreen.SetActive(true);
         }
     }
 }
