@@ -7,6 +7,8 @@ TagManager:
   - WorldSwitchKey
   - Hell
   - Overworld
+  - Kopterlicht
+  - FakeHole
   layers:
   - Default
   - TransparentFX
