@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Death : MonoBehaviour
@@ -6,10 +8,6 @@ public class Death : MonoBehaviour
     {
         if (other.transform.GetComponent<Player>())
         {
-            if (transform.CompareTag("Kopterlicht"))
-            {
-                GameManager.Instance.BustedScreen.SetActive(true);
-            }
             other.transform.GetComponent<Rigidbody2D>().AddTorque(-1f);
             Debug.Log("You died! But your mission is not yet over...");
             other.transform.GetComponent<Rigidbody2D>().freezeRotation = false;

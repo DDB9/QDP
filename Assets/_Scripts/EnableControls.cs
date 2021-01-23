@@ -11,12 +11,4 @@ public class EnableControls : MonoBehaviour
             collision.transform.GetComponent<PlayerMovement>().enabled = true;
         }
     }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (transform.CompareTag("FakeHole"))
-        {
-            gameObject.SetActive(false);
-        }
-    }
 }
