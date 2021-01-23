@@ -25,15 +25,15 @@ public class GameManager : MonoBehaviour
     public GameObject HellWorldComponent;
     public GameObject CurrentCheckpoint;
     public GameObject GameOverScreen;
-    public GameObject CountdownScreen;
-    public TextMeshProUGUI CountdownText;
+    public GameObject GameWinScreen;
+    public GameObject BustedScreen;
     public Transform Spawnpoint;
     public Transform KopterSpawn;
     public Transform HellEntrance;
     public List<Enemy> Enemies = new List<Enemy>();
     public List<Checkpoint> Checkpoints = new List<Checkpoint>();
+    public List<GameObject> FeintWalls = new List<GameObject>();
 
-    private float startTimer = 3f;
     private bool startGame = false;
     
     void Awake()
@@ -43,58 +43,69 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (GameOverScreen.activeSelf)
+        if (GameOverScreen.activeSelf || BustedScreen.activeSelf)
         {
             if (Input.GetKeyDown(KeyCode.R)) Restart();
         }
+        else if (GameWinScreen.activeSelf)
+        {
+            if (Input.anyKey) Application.Quit();
+        }
+
         if (startGame) StartGame();
     }
 
     private void Restart()
     {
-        foreach (Checkpoint point in Checkpoints)
+        if (CurrentCheckpoint != null)
         {
-            if (point != CurrentCheckpoint)
+            foreach (Checkpoint point in Checkpoints)
             {
-                point.transform.parent = HellWorldComponent.transform;
+                if (point != CurrentCheckpoint)
+                {
+                    point.transform.parent = HellWorldComponent.transform;
+                }
             }
+            CurrentCheckpoint.transform.position = HellEntrance.position;
         }
-        CurrentCheckpoint.transform.position = HellEntrance.position;
 
         World.GetComponent<Animator>().Play("WorldRotationReset");
+
         Player.transform.position = Spawnpoint.position;
+        Player.transform.rotation = Quaternion.Euler(Vector3.zero);
+        Player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeAll;
+        Player.GetComponent<PlayerMovement>().enabled = true;
+
         Camera.main.transform.position = new Vector3(Spawnpoint.position.x,
                                                      Spawnpoint.position.y,
                                                      Camera.main.GetComponent<CameraFollow>().CameraDistance);
         foreach (Enemy enemy in Enemies)
         {
             enemy.transform.position = KopterSpawn.position;
+            enemy.Frozen = true;
         }
 
         GameOverScreen.SetActive(false);
+        BustedScreen.SetActive(false);
         startGame = true;
     }
     
     private void StartGame()
     {
-        CountdownScreen.SetActive(true);
-        CountdownText.SetText(startTimer.ToString("f0"));
-        startTimer -= Time.deltaTime;
-        if (startTimer <= 0)
+        foreach (Enemy enemy in Enemies)
+            enemy.Frozen = false;
+
+        Player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
+
+        foreach (Checkpoint point in Checkpoints)
         {
-            foreach (Enemy enemy in Enemies)
-                enemy.Frozen = false;
-
-            Player.GetComponent<Rigidbody2D>().constraints = RigidbodyConstraints2D.FreezeRotation;
-
-            foreach (Checkpoint point in Checkpoints)
-            {
-                 point.transform.parent = Hell.transform;
-            }
-
-            startTimer = 3f;
-            CountdownScreen.SetActive(false);
-            startGame = false;
+                point.transform.parent = Hell.transform;
         }
+        foreach (GameObject wall in FeintWalls)
+        {
+            wall.SetActive(true);
+        }
+
+        startGame = false;
     }
 }
